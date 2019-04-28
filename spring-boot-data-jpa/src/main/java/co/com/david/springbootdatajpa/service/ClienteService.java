@@ -1,6 +1,6 @@
 package co.com.david.springbootdatajpa.service;
 
-import co.com.david.springbootdatajpa.dao.ClienteInterface;
+import co.com.david.springbootdatajpa.dao.IClienteDAO;
 import co.com.david.springbootdatajpa.entity.Cliente;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -14,30 +14,30 @@ import java.util.List;
 public class ClienteService {
 
     @Autowired
-    private ClienteInterface clienteInterface;
+    private IClienteDAO iClienteDAO;
 
     @Transactional(readOnly = true)
     public List<Cliente> findAll() {
-        return (List<Cliente>) clienteInterface.findAll();
+        return (List<Cliente>) iClienteDAO.findAll();
     }
 
     @Transactional
     public void save(Cliente cliente) {
-        clienteInterface.save(cliente);
+        iClienteDAO.save(cliente);
     }
 
     @Transactional(readOnly = true)
     public Cliente obtenerPorId(Long id) {
-        return clienteInterface.findById(id).orElse(null);
+        return iClienteDAO.findById(id).orElse(null);
     }
 
     @Transactional
     public void eliminar(Cliente cliente) {
-        clienteInterface.delete(cliente);
+        iClienteDAO.delete(cliente);
     }
 
     @Transactional(readOnly = true)
     public Page<Cliente> findAll(Pageable pageable) {
-        return clienteInterface.findAll(pageable);
+        return iClienteDAO.findAll(pageable);
     }
 }

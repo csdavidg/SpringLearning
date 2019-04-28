@@ -18,8 +18,11 @@
                              th:alt="${clienteDTO.foto}">
                     </div>
                     <div class="row my-3">
-                        <a th:href="@{/factura/form/} + ${clienteDTO.id}" alt="'Crear Factura'"><i
-                                class="fas fa-file-invoice"></i></a>
+                        <a class="btn btn-success btn-sm" th:href="@{/factura/form/} + ${clienteDTO.id}"
+                           alt="'Crear Factura'">
+                            <i class="fas fa-file-invoice"></i>
+                            Crear Factura
+                        </a>
 
                     </div>
                 </div>
