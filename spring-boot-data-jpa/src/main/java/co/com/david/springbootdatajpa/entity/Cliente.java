@@ -3,6 +3,7 @@ package co.com.david.springbootdatajpa.entity;
 import javax.persistence.*;
 import java.io.Serializable;
 import java.time.LocalDate;
+import java.util.List;
 
 @Entity
 @Table(name = "clientes")
@@ -22,6 +23,16 @@ public class Cliente implements Serializable {
     private LocalDate creadoEn;
 
     private String foto;
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "cliente")
+    private List<Factura> facturas;
+
+    public Cliente() {
+    }
+
+    public Cliente(Long id) {
+        this.id = id;
+    }
 
     public Long getId() {
         return id;
@@ -69,5 +80,13 @@ public class Cliente implements Serializable {
 
     public void setFoto(String foto) {
         this.foto = foto;
+    }
+
+    public List<Factura> getFacturas() {
+        return facturas;
+    }
+
+    public void setFacturas(List<Factura> facturas) {
+        this.facturas = facturas;
     }
 }

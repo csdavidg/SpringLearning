@@ -2,6 +2,7 @@ package co.com.david.springbootdatajpa.dto;
 
 import javax.validation.constraints.NotEmpty;
 import java.time.LocalDate;
+import java.util.List;
 
 public class ClienteDTO {
 
@@ -15,6 +16,14 @@ public class ClienteDTO {
     private String email;
     private LocalDate creadoEn;
     private String foto;
+    private List<FacturaDTO> facturaDTOList;
+
+    public ClienteDTO() {
+    }
+
+    public ClienteDTO(Long id) {
+        this.id = id;
+    }
 
     public Long getId() {
         return id;
@@ -62,5 +71,13 @@ public class ClienteDTO {
 
     public void setFoto(String foto) {
         this.foto = foto;
+    }
+
+    public List<FacturaDTO> getFacturaDTOList() {
+        return facturaDTOList;
+    }
+
+    public void setFacturaDTOList(List<FacturaDTO> facturaDTOList) {
+        this.facturaDTOList = facturaDTOList;
     }
 }

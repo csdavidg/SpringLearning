@@ -18,7 +18,7 @@ import java.util.stream.Collectors;
  * ya que cada objeto deberia tener una logica independiente para respetar el principio de unica responsablidad
  */
 @Component
-public class DTOParser {
+public class ParserUtils {
 
     public Cliente convertirDTOToEntity(ClienteDTO clienteDTO) {
         if (clienteDTO == null) {
@@ -62,7 +62,9 @@ public class DTOParser {
         }
         FacturaDTO facturaDTO = new FacturaDTO();
         facturaDTO.setId(factura.getId());
-        facturaDTO.setClienteDTO(this.convertirEntityToDTO(factura.getCliente()));
+        if (factura.getCliente() != null) {
+            facturaDTO.setClienteDTO(new ClienteDTO(factura.getCliente().getId()));
+        }
         facturaDTO.setCreateAt(factura.getCreateAt());
         facturaDTO.setDescripcion(factura.getDescripcion());
         facturaDTO.setObservacion(factura.getObservacion());
@@ -80,7 +82,7 @@ public class DTOParser {
         Factura factura = new Factura();
         factura.setId(facturaDTO.getId());
         if (facturaDTO.getClienteDTO() != null) {
-            factura.setCliente(this.convertirDTOToEntity(facturaDTO.getClienteDTO()));
+            factura.setCliente(new Cliente(facturaDTO.getClienteDTO().getId()));
         }
         factura.setCreateAt(facturaDTO.getCreateAt());
         factura.setDescripcion(facturaDTO.getDescripcion());

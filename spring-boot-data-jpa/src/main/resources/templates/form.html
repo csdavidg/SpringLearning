@@ -25,8 +25,8 @@
             </div>
             <div class="row p-3">
                 <label>Email</label>
-                <small th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></small>
                 <input type="email" th:field="*{email}" class="form-control"/>
+                <small th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></small>
             </div>
 
             <div class="row p-3">

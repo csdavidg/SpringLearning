@@ -4,17 +4,13 @@ import co.com.david.springbootdatajpa.dto.ClienteDTO;
 import co.com.david.springbootdatajpa.entity.Cliente;
 import co.com.david.springbootdatajpa.service.ClienteService;
 import co.com.david.springbootdatajpa.utils.PageRender;
-import org.apache.catalina.connector.Response;
+import co.com.david.springbootdatajpa.utils.ParserUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.io.Resource;
-import org.springframework.core.io.UrlResource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -24,12 +20,11 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.validation.Valid;
+import java.io.File;
 import java.io.IOException;
-import java.net.MalformedURLException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.time.LocalDate;
 import java.util.Map;
 
 @Controller
@@ -39,7 +34,12 @@ public class ClienteController {
     @Autowired
     private ClienteService clienteService;
 
+    @Autowired
+    private ParserUtils parserUtils;
+
     private final Logger logger = LoggerFactory.getLogger(getClass());
+
+    private final String RUTA_IMAGENES = "/archivos/spring/";
 
     @RequestMapping(value = "/listar", method = RequestMethod.GET)
     public String listarClientes(@RequestParam(name = "page", defaultValue = "0") int page, Model model) {
@@ -64,13 +64,22 @@ public class ClienteController {
         return "form";
     }
 
+    private void eliminarFoto(String nombre) {
+        File fotoFile = new File(RUTA_IMAGENES + nombre);
+        if (fotoFile.exists()) {
+            fotoFile.delete();
+        }
+    }
+
     @RequestMapping(value = "/guardar", method = RequestMethod.POST)
     public String guardar(@Valid ClienteDTO clienteDTO, BindingResult bindingResult, SessionStatus sessionStatus,
                           RedirectAttributes redirectAttributes, @RequestParam(name = "file") MultipartFile foto) {
 
         if (!foto.isEmpty()) {
             try {
-                String ruta = "/archivos/spring/" + foto.getOriginalFilename();
+                this.eliminarFoto(clienteDTO.getFoto());
+
+                String ruta = RUTA_IMAGENES + foto.getOriginalFilename();
                 Path rutaCompleta = Paths.get(ruta);
                 Files.write(rutaCompleta, foto.getBytes());
                 clienteDTO.setFoto(foto.getOriginalFilename());
@@ -83,7 +92,7 @@ public class ClienteController {
         if (bindingResult.hasErrors()) {
             return "form";
         }
-        clienteService.save(this.convertirDTOToEntity(clienteDTO));
+        clienteService.save(parserUtils.convertirDTOToEntity(clienteDTO));
         redirectAttributes.addFlashAttribute("success", "Cliente guardado correctamente");
         sessionStatus.setComplete();
         return "redirect:/listar";
@@ -92,7 +101,7 @@ public class ClienteController {
     @RequestMapping(value = "/form/{id}")
     public String obtenerPorId(@PathVariable(value = "id") Long id, Map<String, Object> model, RedirectAttributes redirectAttributes) {
         if (id > 0) {
-            ClienteDTO clienteDTO = this.convertirEntityToDTO(clienteService.obtenerPorId(id));
+            ClienteDTO clienteDTO = parserUtils.convertirEntityToDTO(clienteService.obtenerPorId(id));
             model.put("clienteDTO", clienteDTO);
             model.put("titulo", "Editar Cliente");
         } else {
@@ -112,7 +121,7 @@ public class ClienteController {
 
     @GetMapping("/ver/{id}")
     public String ver(@PathVariable(value = "id") Long id, Map<String, Object> map, RedirectAttributes redirectAttributes) {
-        ClienteDTO clienteDTO = this.convertirEntityToDTO(clienteService.obtenerPorId(id));
+        ClienteDTO clienteDTO = parserUtils.convertirEntityToDTO(clienteService.obtenerPorId(id));
         if (clienteDTO == null) {
             redirectAttributes.addFlashAttribute("error", "El cliente no existe");
             return "redirect:/listar";
@@ -125,7 +134,7 @@ public class ClienteController {
     /**
      * Consulta la imagen siempre y cuando la ruta sea en la raiz del directorio
      * EJEMPLO De Ruta = /home/david/workspaces/SpringUdemy/spring-boot-data-jpa/imagenes/Imagen.png
-     *
+     * <p>
      * Para obtener el recurso desde ruta especifica, se usa la implementacion creada en la clase MvcConfig
      */
 
@@ -153,32 +162,5 @@ public class ClienteController {
                 .body(resource);
     }*/
 
-    public Cliente convertirDTOToEntity(ClienteDTO clienteDTO) {
-        if (clienteDTO == null) {
-            return null;
-        }
-        Cliente cliente = new Cliente();
-        cliente.setId(clienteDTO.getId());
-        cliente.setNombre(clienteDTO.getNombre());
-        cliente.setApellido(clienteDTO.getApellido());
-        cliente.setEmail(clienteDTO.getEmail());
-        cliente.setCreadoEn(LocalDate.now());
-        cliente.setFoto(clienteDTO.getFoto());
-        return cliente;
-    }
-
-    public ClienteDTO convertirEntityToDTO(Cliente cliente) {
-        if (cliente == null) {
-            return null;
-        }
-        ClienteDTO clienteDTO = new ClienteDTO();
-        clienteDTO.setId(cliente.getId());
-        clienteDTO.setNombre(cliente.getNombre());
-        clienteDTO.setApellido(cliente.getApellido());
-        clienteDTO.setEmail(cliente.getEmail());
-        clienteDTO.setCreadoEn(LocalDate.now());
-        clienteDTO.setFoto(cliente.getFoto());
-        return clienteDTO;
-    }
 
 }
