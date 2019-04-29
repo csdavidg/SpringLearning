@@ -8,6 +8,9 @@ import co.com.david.springbootdatajpa.entity.Cliente;
 import co.com.david.springbootdatajpa.entity.Factura;
 import co.com.david.springbootdatajpa.entity.ItemFactura;
 import co.com.david.springbootdatajpa.entity.Producto;
+import co.com.david.springbootdatajpa.service.ClienteService;
+import co.com.david.springbootdatajpa.service.ProductoService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
@@ -19,6 +22,12 @@ import java.util.stream.Collectors;
  */
 @Component
 public class ParserUtils {
+
+    @Autowired
+    private ProductoService productoService;
+
+    @Autowired
+    private ClienteService clienteService;
 
     public Cliente convertirDTOToEntity(ClienteDTO clienteDTO) {
         if (clienteDTO == null) {
@@ -82,9 +91,9 @@ public class ParserUtils {
         Factura factura = new Factura();
         factura.setId(facturaDTO.getId());
         if (facturaDTO.getClienteDTO() != null) {
-            factura.setCliente(new Cliente(facturaDTO.getClienteDTO().getId()));
+            factura.setCliente(clienteService.obtenerPorId(facturaDTO.getClienteDTO().getId()));
         }
-        factura.setCreateAt(facturaDTO.getCreateAt());
+        factura.setCreateAt(LocalDate.now());
         factura.setDescripcion(facturaDTO.getDescripcion());
         factura.setObservacion(facturaDTO.getObservacion());
         if (facturaDTO.getItemFacturasList() != null) {
@@ -125,7 +134,9 @@ public class ParserUtils {
         ItemFactura itemFactura = new ItemFactura();
         itemFactura.setId(itemFacturaDTO.getId());
         itemFactura.setCantidad(itemFacturaDTO.getCantidad());
-        itemFactura.setProducto(this.convertirDTOToEntity(itemFacturaDTO.getProductoDTO()));
+        if (itemFacturaDTO.getProductoDTO() != null) {
+            itemFactura.setProducto(productoService.findProductoById(itemFacturaDTO.getProductoDTO().getId()));
+        }
         return itemFactura;
     }
 

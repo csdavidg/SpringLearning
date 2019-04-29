@@ -9,6 +9,13 @@ public class ProductoDTO {
     private Double precio;
     private LocalDate createAt;
 
+    public ProductoDTO() {
+    }
+
+    public ProductoDTO(Long id) {
+        this.id = id;
+    }
+
     public Long getId() {
         return id;
     }

@@ -1,15 +1,20 @@
 package co.com.david.springbootdatajpa.dto;
 
+import javax.validation.constraints.NotEmpty;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 public class FacturaDTO {
 
     private Long id;
+    @NotEmpty
     private String descripcion;
+    @NotEmpty
     private String observacion;
     private LocalDate createAt;
     private ClienteDTO clienteDTO;
+    //@NotEmpty
     private List<ItemFacturaDTO> itemFacturasList;
 
     public Long getId() {
@@ -53,7 +58,10 @@ public class FacturaDTO {
     }
 
     public List<ItemFacturaDTO> getItemFacturasList() {
-        return itemFacturasList;
+        if (this.itemFacturasList == null) {
+            this.itemFacturasList = new ArrayList<>();
+        }
+        return this.itemFacturasList;
     }
 
     public void setItemFacturasList(List<ItemFacturaDTO> itemFacturasList) {

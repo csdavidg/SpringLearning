@@ -17,7 +17,8 @@ public class ProductoController {
     private ProductoService productoService;
 
     @GetMapping(value = "/obtener/productos/{nombre}", produces = {"application/json"})
-    public @ResponseBody List<ProductoDTO> obtenerProductosPorNombre(@PathVariable String nombre) {
+    @ResponseBody
+    public List<ProductoDTO> obtenerProductosPorNombre(@PathVariable String nombre) {
         return productoService.findAllLikeName(nombre);
     }
 }

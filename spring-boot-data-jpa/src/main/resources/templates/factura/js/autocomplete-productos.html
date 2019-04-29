@@ -24,12 +24,62 @@
                 });
             },
             select: function (event, ui) {
-                $("#buscarProducto").val(ui.item.label);
+                $("#buscarProducto").val("");
+                if (itemsHelper.hasProducto(ui.item.value)) {
+                    itemsHelper.incrementaCantidad(ui.item.value, ui.item.precio);
+                    return false;
+                }
+
+                var item = $("#plantillaItemFactura").html();
+                item = item.replace(/{ID}/g, ui.item.value);
+                item = item.replace(/{NOMBRE}/g, ui.item.label);
+                item = item.replace(/{PRECIO}/g, ui.item.precio);
+
+                $("#cargarItemProductos tbody").append(item);
+                itemsHelper.calcularImporte(ui.item.value, ui.item.precio, 1)
                 return false;
             }
 
         });
+
+        $("form").submit(function () {
+            $("#plantillaItemFactura").remove();
+            return;
+        });
     });
+
+    var itemsHelper = {
+        calcularImporte: function (id, precio, cantidad) {
+            $("#totalImporte" + id).html(parseInt(precio) * parseInt(cantidad));
+            this.calcularGranTotal();
+        },
+        hasProducto: function (id) {
+            var resultado = false;
+            $("input[name='item_id[]']").each(function () {
+                if (parseInt(id) == parseInt($(this).val())) {
+                    resultado = true;
+                }
+            });
+            return resultado;
+        },
+        incrementaCantidad: function (id, precio) {
+            var cantidad = $("#cantidad_" + id).val() ? parseInt($("#cantidad_" + id).val()) : 0;
+            $("#cantidad_" + id).val(++cantidad);
+            this.calcularImporte(id, precio, cantidad);
+        },
+        eliminarLineaFactura: function (id) {
+            $("#row_" + id).remove();
+            this.calcularGranTotal();
+        },
+        calcularGranTotal: function () {
+            var total = 0;
+            $("span[id^='totalImporte']").each(function () {
+                total += parseInt($(this).html());
+            });
+            $("#granTotal").html(total);
+            return total;
+        }
+    }
 
 </script>
 

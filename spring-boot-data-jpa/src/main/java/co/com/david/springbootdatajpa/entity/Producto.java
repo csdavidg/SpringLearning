@@ -3,7 +3,6 @@ package co.com.david.springbootdatajpa.entity;
 import javax.persistence.*;
 import java.io.Serializable;
 import java.time.LocalDate;
-import java.util.List;
 
 @Entity
 @Table(name = "productos")
@@ -19,6 +18,14 @@ public class Producto implements Serializable {
 
     @Column(name = "creado_en")
     private LocalDate createAt;
+
+    public Producto() {
+
+    }
+
+    public Producto(Long id) {
+        this.id = id;
+    }
 
     public Long getId() {
         return id;

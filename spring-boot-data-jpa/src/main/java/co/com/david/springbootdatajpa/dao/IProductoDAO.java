@@ -10,4 +10,6 @@ public interface IProductoDAO extends PagingAndSortingRepository<Producto, Long>
 
     @Query("SELECT p FROM Producto p WHERE p.nombre like %?1%")
     List<Producto> findAllLikeName(String nombre);
+
+    List<Producto> findByNombreLikeIgnoreCase(String nombre);
 }
