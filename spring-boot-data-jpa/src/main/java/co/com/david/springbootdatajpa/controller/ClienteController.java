@@ -41,7 +41,7 @@ public class ClienteController {
 
     private final String RUTA_IMAGENES = "/archivos/spring/";
 
-    @RequestMapping(value = "/listar", method = RequestMethod.GET)
+    @RequestMapping(value = {"/listar", "/"}, method = RequestMethod.GET)
     public String listarClientes(@RequestParam(name = "page", defaultValue = "0") int page, Model model) {
 
 
